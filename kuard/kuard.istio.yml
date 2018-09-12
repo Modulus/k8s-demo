@@ -1,0 +1,35 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: kuard-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: kuard
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - kuard-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    rewrite:  
+      uri: /
+    route:
+    - destination:
+        host: kuard-service
+        port:
+          number: 8080
